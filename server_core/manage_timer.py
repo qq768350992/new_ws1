@@ -443,17 +443,17 @@ class ManageTimer:
         for row in a:
             if teacher_id == row[0]:
                 lea = 0
-                ok = 0
+                cq = 0; cd = 0
                 sum = 0
                 for line in [row for row in csv.reader(open('../data/%s_%s_%s_checkinDetail.csv' % (row[0], row[1], row[2])))]:
                     sum += 1
                     if line[5] == '缺勤':
                         print line[0],self.tool.get_student_name(line[0]),line[5]
-                    if line[5] == '请假':
-                        lea += 1
-                    if line[5] == '出勤':
-                        ok += 1
-                print '出勤率: %.2f%%' % (float(ok) / (sum) * 100)
+                    if line[5] == '请假': lea += 1
+                    if line[5] == '出勤': cq += 1
+                    if line[5] == '迟到': cd += 1
+                print '出勤率: %.2f%%' % (float(cq+cd) / (sum) * 100)
+                print '早退：'
                 print '请假人数: %d' % lea
                 break
 
