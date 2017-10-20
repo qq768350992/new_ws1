@@ -442,19 +442,20 @@ class ManageTimer:
         a.reverse()
         for row in a:
             if teacher_id == row[0]:
-                lea = 0
-                cq = 0; cd = 0
+                cq = 0; cd = 0; qj = 0; zt = 0; qq = 0; is_succ = 0
                 sum = 0
                 for line in [row for row in csv.reader(open('../data/%s_%s_%s_checkinDetail.csv' % (row[0], row[1], row[2])))]:
                     sum += 1
                     if line[5] == '缺勤':
+                        qq += 1
                         print line[0],self.tool.get_student_name(line[0]),line[5]
-                    if line[5] == '请假': lea += 1
+                    if line[5] == '请假': qj += 1
                     if line[5] == '出勤': cq += 1
                     if line[5] == '迟到': cd += 1
+                    if line[5] == '早退': zt += 1
+                    if line[4] == 'False' : is_succ += 1
                 print '出勤率: %.2f%%' % (float(cq+cd) / (sum) * 100)
-                print '早退：'
-                print '请假人数: %d' % lea
+                print '总人数:%s 出勤:%s 请假:%s 迟到:%s 早退:%s 缺勤:%s 认证失败:%s' % (sum, cq, qj, cd, zt, qq, is_succ)
                 break
 
 if __name__ == '__main__':
