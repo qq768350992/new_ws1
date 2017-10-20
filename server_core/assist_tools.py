@@ -102,9 +102,6 @@ class AssistTools:
             if course.count(row['ClassID']) != 0:
                 stu_list.append(row['StuID'])
         return stu_list
-
-    def get_course_stu(self, course_id):
-        pass
         
     def get_own_course(self, teacher_id):
         data = [[row[0], row[2]] for row in csv.reader(open('../interior/courseInfo.csv'))]
@@ -133,6 +130,6 @@ class AssistTools:
 
 if __name__ == '__main__':
     t = AssistTools()
-    print t.get_stu_list('51610189')
+    print t.get_stu_list('51610166')
 
 

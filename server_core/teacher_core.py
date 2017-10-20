@@ -37,7 +37,6 @@ class TeacherCore:
             random_list = []
             for row in list:
                 if row[4] == self.teacher_id:
-                    print self.tool.get_stu_list(row[0])
                     stu = [row for row in self.tool.get_stu_list(row[0])]
                     random_list = random.sample(stu, nums)
                     break
@@ -46,6 +45,7 @@ class TeacherCore:
             return 0
         print '开启成功,如下:'
         print(textwrap.fill(str(random_list), width=40))
+        self.manager.random_change_detail(self.teacher_id, list, random_list)
         return self.manager.set_r(3, list, self.teacher_id, random_list) # 未完成
 
     def exe_lea(self, list):
@@ -65,12 +65,12 @@ class TeacherCore:
         if self.tool.get_own_course(self.teacher_id).count(course_id) == 0:
             print '此课程号不在你处理的范围内'
             return 0
+        seq_id = raw_input('输入考勤次序号：')
+        if self.manager.seq_id_check(seq_id, course_id) == 0:
+            return 0
         student_id = raw_input('输入学号：')
         if self.tool.get_stu_list(course_id).count(student_id) == 0:
             print '该课程无此学号'
-            return 0
-        seq_id = raw_input('输入考勤次序号：')
-        if self.manager.seq_id_check(seq_id, course_id) == 0:
             return 0
         data = [self.teacher_id, course_id, seq_id, student_id]
         status = self.manager.get_detail_status(data)
@@ -82,15 +82,20 @@ class TeacherCore:
         if choose <= '0':
             return
         try:
-            new_status =  dict[choose]
+            new_status = dict[choose]
         except:
             return
+        detail = [None, None, 'man', True, new_status]
         if new_status == self.manager.get_detail_status(data):
             print '你选择考勤状态的与原来相同,修改成功'
-            self.manager.alter_sum(data, new_status)
+            detail[4] = new_status
+            self.manager.alter_sum(data, detail)
         else:
-            self.manager.alter_detail(data, new_status)
-            self.manager.alter_sum(data, new_status)
+            detail[4] = new_status
+            print detail
+
+            self.manager.alter_detail(data, detail)
+            self.manager.alter_sum(data, detail)
             print '修改成功'
 
     def man_check_in(self, list): # 批量增加 下课
@@ -105,5 +110,4 @@ class TeacherCore:
 
 if __name__ == '__main__':
     t = TeacherCore('2004355')
-    list = t.check_in([])
-    list = t.random_check_in(list)
+    list = t.maintain([])

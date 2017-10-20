@@ -276,7 +276,7 @@ class ManageTimer:
                 return 0
             choose = raw_input('是否批准请假y/n，0退出')
             if choose == 'y':
-                detail_data = [' ', ' ', 'man', 'True', '请假' ]
+                detail_data = [None, None, 'man', 'True', '请假' ]
                 # detail_data = [ time, proofpath, checkintype, issucc, checkinresult ]
                 self.alter_detail(lea_data, detail_data)
                 self.alter_sum(lea_data, '请假')
@@ -292,26 +292,41 @@ class ManageTimer:
         for row in range(1, seq_max + 1):
             tem.append(i)
             i += 1
-        if tem.count(int(seq_id)) == 0:
+        try:
+            if tem.count(int(seq_id)) == 0:
+                print '考勤次序号不存在'
+                return 0
+        except:
             print '考勤次序号不存在'
             return 0
         return 1
 
     def get_detail_status(self, data):
-        try:
-            detail_data = [row for row in csv.reader(open('../data/%s_%s_%s_checkinDetail.csv' % (data[0], data[1], data[2])))]
-        except:
-            print '输入异常'
-            return 0
+        detail_data = [row for row in csv.reader(open('../data/%s_%s_%s_checkinDetail.csv' % (data[0], data[1], data[2])))]
         if not detail_data:
             return 0
         for row in detail_data:
             if row[0] == data[3]:
                 return row[5]
 
-    def random_change_detail(self, random_list):
-        for row in random_list:
-            pass
+    def random_change_detail(self, teacher_id, list, random_list):
+        course_id = None
+        for row in list:
+            if teacher_id == row[4]:
+                course_id = row[0]
+        data = [row for row in csv.reader(open('../data/%s_%s_%s_checkinDetail.csv' % (teacher_id, course_id, self.tool.get_seq_id(course_id))))]
+        random_stu = {}
+        for row in data:
+            if random_list.count(row[0]) != 0:
+                random_stu[row[0]] = row[5]
+        tem = []
+        for row in data:
+            if random_list.count(row[0]):
+                old = random_stu[row[0]]
+                if old == '出勤' or old == '早退' or old == '迟到':
+                    row[5] = '早退'
+            tem.append(row)
+        csv.writer(open('../data/%s_%s_%s_checkinDetail.csv' % (teacher_id, course_id, self.tool.get_seq_id(course_id)), 'wb')).writerows(tem)
 
     def alter_detail(self, data, detail_data):
         # data =   [ teacher_id, course_id, seq_id, student_id]
@@ -325,11 +340,11 @@ class ManageTimer:
             if row[0] == data[3]:
                 tem_detail.pop()
                 d = row
-                if d[1] != ' ':d[1] = detail_data[0]
-                if d[2] != ' ':d[2] = detail_data[1]
-                if d[3] != ' ':d[3] = detail_data[2]
-                if d[4] != ' ':d[4] = detail_data[3]
-                if d[5] != ' ':d[5] = detail_data[4]
+                if detail_data[0] != None:d[1] = detail_data[0]
+                if detail_data[1] != None:d[2] = detail_data[1]
+                if detail_data[2] != None:d[3] = detail_data[2]
+                if detail_data[3] != None:d[4] = detail_data[3]
+                if detail_data[4] != None:d[5] = detail_data[4]
                 tem_detail.append(d)
         csv.writer(open('../data/%s_%s_%s_checkinDetail.csv' % (data[0], data[1], data[2]), 'wb')).writerows(tem_detail)
 
@@ -359,7 +374,7 @@ class ManageTimer:
                 normal_time = row[1]
         detail_data.append(['StuID', 'checkinTime', 'ProofPath', 'checkinType', 'IsSucc', 'checkinResult'])
         for stu_id in self.tool.get_stu_list(tem_list[0]):
-            detail_data.append([stu_id, ' ', ' ', ' ', ' ', ' '])
+            detail_data.append([stu_id, ' ', ' ', ' ', ' ', '缺勤'])
         csv.writer(open('../data/%s_%s_%s_checkinDetail.csv' % (tem_list[4], tem_list[0], seq_id), 'wb')).writerows(detail_data)
         _t = threading.Timer(float(normal_time) * 60.0, self.set_r(2, list, tem_list[4], []))
         _t.start()
