@@ -81,6 +81,7 @@ class ManageTimer:
                 if row[0] == s or row[4] == tem_list[4]:
                     tem.pop()
                     tem.append(tem_list)
+                    self.write_sum(row[4], row[0])
             return tem
 
     def set_r(self, r, list, teacher_id, random_list):
@@ -108,8 +109,28 @@ class ManageTimer:
             tem.append(row)
             if teacher_id == row[4]:
                 tem.pop()
+                self.write_sum(row[4], row[0])
                 print '%s的时间窗口已结束' % row[0]
         return tem
+
+    def write_sum(self, teacher_id, course_id):
+        sum_data = [row for row in csv.reader(open('../data/sum/%s_%s_sum.csv' % (teacher_id, course_id)))]
+        if not sum_data:
+            sum_data = [stu_id for stu_id in self.tool.get_stu_list(course_id)]
+            sum_data.insert(0, ['StuID'])
+        seq_id = self.tool.get_seq_id(course_id)
+        with open('../data/%s_%s_%s_checkinDetail.csv' % (teacher_id, course_id, seq_id)) as csvfile:
+            reader = csv.DictReader(csvfile)
+            sumdata = [[stu['StuID'], stu['checkinResult']] for stu in reader]
+            sum_data[0].append('checkin%d' % seq_id)
+        j = 0
+        for id in sum_data:
+            for stu in sumdata:
+                if stu[0] == id[0]:
+                    sum_data[j].append(stu[1])
+                    continue
+            j += 1
+        csv.writer(open('../data/sum/%s_%s_sum.csv' % (tem_list[4], tem_list[0]), 'wb')).writerows(sum_data)
 
     def stu_start_checkin(self, student_id, list, detail_data):
         s = self.is_timer_exist(student_id, list)  # 直接给值, 开始之前已经检测
@@ -381,25 +402,6 @@ class ManageTimer:
         t = threading.Timer((time_limit - float(normal_time)) * 60.0, self.leave_list(list, tem_list[4]))  # 定时器
         t.start()
 
-    def write_sum(self, tem_list):
-        sum_data = [row for row in csv.reader(open('../data/sum/%s_%s_sum.csv' % (tem_list[4], tem_list[0])))]
-        if not sum_data:
-            sum_data = [stu_id for stu_id in self.tool.get_stu_list(tem_list[0])]
-            sum_data.insert(0, ['StuID'])
-        seq_id = self.tool.get_seq_id(tem_list[0])
-        with open('../data/%s_%s_%s_checkinDetail.csv' % (tem_list[4], tem_list[0], seq_id)) as csvfile:
-            reader = csv.DictReader(csvfile)
-            sumdata = [[stu['StuID'], stu['checkinResult']] for stu in reader]
-            sum_data[0].append('checkin%d' % seq_id)
-        j = 0
-        for id in sum_data:
-            for stu in sumdata:
-                if stu[0] == id[0]:
-                    sum_data[j].append(stu[1])
-                    continue
-            j += 1
-        csv.writer(open('../data/sum/%s_%s_sum.csv' % (tem_list[4], tem_list[0]), 'wb')).writerows(sum_data)
-
     def write_seq(self, teacher_id, course_id):
         seq_data = [row for row in csv.reader(open('../data/seq.csv'))]
         if seq_data == []:
@@ -434,6 +436,14 @@ class ManageTimer:
                 if self.tool.get_local_time()+5*60 <= row[2]:
                     return True
         return 0
+
+    def show_recent_atd(self, teacher_id):  # for tea
+        course_id = None
+        for row in list:
+            if teacher_id == row[4]:
+                course_id = row[0]
+
+
 if __name__ == '__main__':
     t = ManageTimer()
     print t.list_add(['51610189',1,1,2,'2004633'],[['51610189',1,100,200,'200463']])

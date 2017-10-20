@@ -73,30 +73,18 @@ class TeacherCore:
             print '该课程无此学号'
             return 0
         data = [self.teacher_id, course_id, seq_id, student_id]
-        status = self.manager.get_detail_status(data)
-        if status == 0:
-            return 0
-        print '%s考勤的状态是：%s' % (self.tool.get_student_name(student_id), status)
+        print '%s考勤的状态是：%s' % (self.tool.get_student_name(student_id), self.manager.get_detail_status(data))
         choose = raw_input('你要修改成？ 1,出勤 2,缺勤 3,请假 4,迟到 5,早退 输入其它退出')
         dict = {'1':'出勤', '2':'缺勤', '3':'请假', '4':'迟到', '5':'早退'}
         if choose <= '0':
-            return
+            return 0
         try:
-            new_status = dict[choose]
+            detail = [None, None, 'man', True, dict[choose]]
         except:
-            return
-        detail = [None, None, 'man', True, new_status]
-        if new_status == self.manager.get_detail_status(data):
-            print '你选择考勤状态的与原来相同,修改成功'
-            detail[4] = new_status
-            self.manager.alter_sum(data, detail)
-        else:
-            detail[4] = new_status
-            print detail
-
-            self.manager.alter_detail(data, detail)
-            self.manager.alter_sum(data, detail)
-            print '修改成功'
+            return 0
+        self.manager.alter_detail(data, detail)
+        self.manager.alter_sum(data, detail)
+        print '修改成功'
 
     def man_check_in(self, list): # 批量增加 下课
         course_id = self.manager.has_r(list, self.teacher_id)
