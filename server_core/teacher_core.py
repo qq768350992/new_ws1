@@ -95,6 +95,12 @@ class TeacherCore:
             return 0
         self.manager.init_data(course_id)
         self.manager.write_seq(self.teacher_id, course_id)
+    #
+    # def show_recent_atd(self, list):  # for tea
+    #     course_id = None
+    #     for row in list:
+    #         if teacher_id == row[4]:
+    #             course_id = row[0]
 
 if __name__ == '__main__':
     t = TeacherCore('2004355')

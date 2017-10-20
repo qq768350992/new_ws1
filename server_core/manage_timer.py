@@ -437,13 +437,20 @@ class ManageTimer:
                     return True
         return 0
 
-    def show_recent_atd(self, teacher_id):  # for tea
-        course_id = None
-        for row in list:
-            if teacher_id == row[4]:
-                course_id = row[0]
+    def get_recent_atd(self, list, teacher_id):  # for tea
+        a = [row for row in csv.reader(open('../data/seq.csv'))]
+        a.reverse()
+        for row in a:
+            if teacher_id == row[0]:
+                i = 0
+                for line in [row for row in csv.reader(open('../data/%s_%s_%s_checkinDetail.csv' % (row[0], row[1], row[2])))]:
+                    if line[5] == '缺勤':
+                        print line[0],self.tool.get_student_name(line[0]),line[5]
+                    if line[5] == '请假':
+                        i += 1
 
+                break
 
 if __name__ == '__main__':
     t = ManageTimer()
-    print t.list_add(['51610189',1,1,2,'2004633'],[['51610189',1,100,200,'200463']])
+    t.get_recent_atd([], '2004355')
