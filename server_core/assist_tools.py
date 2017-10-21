@@ -34,12 +34,8 @@ class AssistTools:
         return time_limit + local_time
 
     def get_teacher_id(self, course_id):
-        tem = [row[2] for row in csv.reader(open('../interior/courseInfo.csv'))]
-        tem.pop(0)
-        data = [[row[0], row[2]] for row in csv.reader(open('../interior/courseInfo.csv'))]
-        data.pop(0)
-        for row in list(set(tem)):  # set集合 优点不重复 以教工号为主
-            for d in data:
+        for row in list(set([row[2] for row in csv.reader(open('../interior/courseInfo.csv'))])):  # set集合 优点不重复 以教工号为主
+            for d in [[row[0], row[2]] for row in csv.reader(open('../interior/courseInfo.csv'))]:
                 if row == d[1] and course_id == d[0]:
                     return d[1]
 
