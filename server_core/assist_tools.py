@@ -32,7 +32,6 @@ class AssistTools:
         time_limit = int(cf.get('time', 'timewindow')) * 60
         local_time = time.localtime()[3] * 3600 + time.localtime()[4] * 60 + time.localtime()[5]
         return time_limit + local_time
-##########################时间 ##############################
 
     def get_teacher_id(self, course_id):
         tem = [row[2] for row in csv.reader(open('../interior/courseInfo.csv'))]
@@ -81,18 +80,7 @@ class AssistTools:
             return 1
         return len(data)
 
-    def get_stu_wechat_list(self, course_id):
-        course = []
-        stu_wechat_list = []
-        for row in [row for row in csv.DictReader(open('../interior/courseInfo.csv'))]:
-            if row['TeacherID'] == self.get_teacher_id(course_id) and row['CourseID'] == course_id:
-                course.append(row['ClassName'])
-        for row in [row for row in csv.DictReader(open('../interior/studentinfo.csv'))]:
-            if course.count(row['ClassID']) != 0:
-                stu_wechat_list.append(row['WeChatID'])
-        return stu_wechat_list
-
-    def get_stu_list(self, course_id):
+    def get_stu_list(self, course_id, tpye):
         course = []
         stu_list = []
         for row in [row for row in csv.DictReader(open('../interior/courseInfo.csv'))]:
@@ -100,7 +88,10 @@ class AssistTools:
                 course.append(row['ClassName'])
         for row in [row for row in csv.DictReader(open('../interior/studentinfo.csv'))]:
             if course.count(row['ClassID']) != 0:
-                stu_list.append(row['StuID'])
+                if tpye == 1:
+                    stu_list.append(row['StuID'])
+                else:
+                    stu_list.append(row['WeChatID'])
         return stu_list
         
     def get_own_course(self, teacher_id):
@@ -127,9 +118,3 @@ class AssistTools:
                 if row['ClassName'] == d:
                     course.append(row['CourseID'])
         return course
-
-if __name__ == '__main__':
-    t = AssistTools()
-    print t.get_stu_list('51610166')
-
-

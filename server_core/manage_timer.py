@@ -29,9 +29,9 @@ class ManageTimer:
         return False
 
     def has_stu_wechat(self, tem_list, list):
-        stu_data = self.tool.get_stu_wechat_list(tem_list[0])
+        stu_data = self.tool.get_stu_list(tem_list[0], 2)
         for row in list:
-            stu_tem = self.tool.get_stu_wechat_list(row[0])
+            stu_tem = self.tool.get_stu_list(row[0], 2)
             for d in stu_data:
                 if stu_tem.count(d) != 0:
                     if row[2] <= row[3]:
@@ -116,7 +116,7 @@ class ManageTimer:
     def write_sum(self, teacher_id, course_id):
         sum_data = [row for row in csv.reader(open('../data/sum/%s_%s_sum.csv' % (teacher_id, course_id)))]
         if not sum_data:
-            sum_data = [stu_id for stu_id in self.tool.get_stu_list(course_id)]
+            sum_data = [stu_id for stu_id in self.tool.get_stu_list(course_id, 1)]
             sum_data.insert(0, ['StuID'])
         seq_id = self.tool.get_seq_id(course_id)
         with open('../data/%s_%s_%s_checkinDetail.csv' % (teacher_id, course_id, seq_id)) as csvfile:
@@ -130,7 +130,7 @@ class ManageTimer:
                     sum_data[j].append(stu[1])
                     continue
             j += 1
-        csv.writer(open('../data/sum/%s_%s_sum.csv' % (tem_list[4], tem_list[0]), 'wb')).writerows(sum_data)
+        csv.writer(open('../data/sum/%s_%s_sum.csv' % (teacher_id, course_id), 'wb')).writerows(sum_data)
 
     def stu_start_checkin(self, student_id, list, detail_data):
         s = self.is_timer_exist(student_id, list)  # 直接给值, 开始之前已经检测
@@ -259,8 +259,6 @@ class ManageTimer:
             j = 0
             for filename in filenames:
                 if filename[:7] == teacher_id:
-                    print filename[8:16]
-
                     flag = j
                     if course_id == None:
                         print '%s:'%self.tool.get_course_name(filename[8:16])
@@ -281,7 +279,7 @@ class ManageTimer:
                                     print '  %s  %s %s:在第%s节课向你请假' % (j, self.tool.get_student_name(row[0]),row[0], i-1)
                                 else:
                                     print '此课程有未审批的假条,请先批假。'
-                                    return []
+                                    return [0]
                                 data.append([teacher_id, filename[8:16], i-1, row[0]])
                     if flag == j and course_id == None:
                         print '空'
@@ -401,7 +399,7 @@ class ManageTimer:
             if tem_list[4] == row[0]:
                 normal_time = row[1]
         detail_data.append(['StuID', 'checkinTime', 'ProofPath', 'checkinType', 'IsSucc', 'checkinResult'])
-        for stu_id in self.tool.get_stu_list(tem_list[0]):
+        for stu_id in self.tool.get_stu_list(tem_list[0], 1):
             detail_data.append([stu_id, ' ', ' ', ' ', 'False', '缺勤'])
         csv.writer(open('../data/%s_%s_%s_checkinDetail.csv' % (tem_list[4], tem_list[0], seq_id), 'wb')).writerows(detail_data)
         _t = threading.Timer(float(normal_time) * 60.0, self.set_r(2, list, tem_list[4], []))
@@ -419,7 +417,7 @@ class ManageTimer:
     def init_data(self, course_id):
         tem = []
         tem.append(['StuID', 'checkinTime', 'ProofPath', 'checkinType', 'IsSucc', 'checkinResult'])
-        stu_list = self.tool.get_stu_list(course_id)
+        stu_list = self.tool.get_stu_list(course_id, 1)
         if stu_list:
             stu_list.pop()
         print '考勤状态序号：1:出勤 2:缺勤 3:请假 4:迟到 5:早退'
@@ -451,7 +449,9 @@ class ManageTimer:
             if teacher_id == row[0]:
                 cq = 0; cd = 0; qj = 0; zt = 0; qq = 0; is_succ = 0
                 sum = 0
-                for line in [row for row in csv.reader(open('../data/%s_%s_%s_checkinDetail.csv' % (row[0], row[1], row[2])))]:
+                data = [row for row in csv.reader(open('../data/%s_%s_%s_checkinDetail.csv' % (row[0], row[1], row[2])))]
+                if data: data.pop(0)
+                for line in data:
                     sum += 1
                     if line[5] == '缺勤':
                         qq += 1
@@ -466,9 +466,34 @@ class ManageTimer:
                 break
 
     def get_sum_atd(self, teacher_id, course_id):
-        if not self.get_lea_list(teacher_id, course_id):
+        if self.tool.get_own_course(teacher_id).count(course_id) == 0:
+            print '此课程号不在你处理的范围内'
             return 0
-
+        if self.get_lea_list(teacher_id, course_id).count(0):
+            return 0
+        data = [row for row in csv.reader(open('../data/sum/%s_%s_sum.csv' % (teacher_id, course_id)))]
+        if not data:
+            print '还未考过勤'
+            return 0
+        else:
+            data.pop(0)
+        sum_atd = 0; max = 0
+        print ' 姓名      学号          考勤状态(按次序排列)'
+        for row in data:
+            max = len(row)
+            import json
+            print '%s %s --' % (self.tool.get_student_name(row[0]), row[0]),
+            print json.dumps(row[1:], ensure_ascii=False)
+        for i in range(1, max):
+            cq = 0
+            sum = 0
+            for row in data:
+                sum += 1
+                if row[i] == '出勤':
+                    cq += 1
+            print '第 %s 节次出勤率: %.2f%%' % (i, float(cq) / (sum) * 100)
+            sum_atd += float(cq) / (sum) * 100
+        print '%s的平均出勤率: %.2f%%' % (self.tool.get_course_name(course_id), sum_atd / max)
 if __name__ == '__main__':
     t = ManageTimer()
-    t.get_lea_list('2004355', '51610055')
+    t.get_sum_atd('2004355', '51610055')

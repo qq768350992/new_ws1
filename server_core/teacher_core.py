@@ -37,7 +37,7 @@ class TeacherCore:
             random_list = []
             for row in list:
                 if row[4] == self.teacher_id:
-                    stu = [row for row in self.tool.get_stu_list(row[0])]
+                    stu = [row for row in self.tool.get_stu_list(row[0], 1)]
                     random_list = random.sample(stu, nums)
                     break
         except:
@@ -69,7 +69,7 @@ class TeacherCore:
         if self.manager.seq_id_check(seq_id, course_id) == 0:
             return 0
         student_id = raw_input('输入学号：')
-        if self.tool.get_stu_list(course_id).count(student_id) == 0:
+        if self.tool.get_stu_list(course_id, 1).count(student_id) == 0:
             print '该课程无此学号'
             return 0
         data = [self.teacher_id, course_id, seq_id, student_id]
@@ -100,6 +100,7 @@ class TeacherCore:
 
     def show_sum_adt(self):
         course_id = raw_input('输入课程号：')
+
 
 if __name__ == '__main__':
     t = TeacherCore('2004355')
