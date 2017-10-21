@@ -32,3 +32,6 @@ class StudentCore:
         if self.manager.is_timer_exist(self.student_id, list) == 0: # 检测自己的课头是否存在
             return 0
         self.manager.get_current_atd(self.student_id, list)
+
+    def show_history_atd(self):
+        self.manager.get_history_atd(self.student_id)

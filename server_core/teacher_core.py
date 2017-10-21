@@ -58,7 +58,7 @@ class TeacherCore:
         if self.manager.has_r(list, self.teacher_id) != 0:
             print '你还有正在进行的考勤,无法使用此功能'
             return 0
-        if self.manager.get_lea_list(self.teacher_id, p = 0):
+        if self.manager.get_lea_list(self.teacher_id):
             print '你有未处理的假条,无法维护考勤记录'
             return 0
         course_id = raw_input('输入课程号：')
@@ -87,20 +87,19 @@ class TeacherCore:
         print '修改成功'
 
     def man_check_in(self, list): # 批量增加 下课
-        course_id = self.manager.has_r(list, self.teacher_id)
-        if course_id != 0:
+        if self.manager.has_r(list, self.teacher_id) != 0:
             return 0
         course_id = raw_input('输入课程号：')
         if self.manager.course_check(self.teacher_id, course_id) == 0:
             return 0
         self.manager.init_data(course_id)
         self.manager.write_seq(self.teacher_id, course_id)
-    #
-    # def show_recent_atd(self, list):  # for tea
-    #     course_id = None
-    #     for row in list:
-    #         if teacher_id == row[4]:
-    #             course_id = row[0]
+
+    def show_recent_atd(self):  # for tea
+        self.manager.get_recent_atd(self.teacher_id)
+
+    def show_sum_adt(self):
+        course_id = raw_input('输入课程号：')
 
 if __name__ == '__main__':
     t = TeacherCore('2004355')

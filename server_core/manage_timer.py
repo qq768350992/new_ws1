@@ -253,19 +253,21 @@ class ManageTimer:
             print '此课程号不属于你'
             return 0
 
-    def get_lea_list(self, teacher_id, p = 1):
+    def get_lea_list(self, teacher_id, course_id = None):
         data = []
         for parent,dirnames,filenames in os.walk('../data/sum'):
             j = 0
             for filename in filenames:
                 if filename[:7] == teacher_id:
+                    print filename[8:16]
+
                     flag = j
-                    if p == 1:
+                    if course_id == None:
                         print '%s:'%self.tool.get_course_name(filename[8:16])
-                    path = os.path.join(parent,filename)
+                    path = os.path.join(parent, filename)
                     tem = [row for row in csv.reader(open(path))]
                     if not tem:
-                        if p == 1:
+                        if course_id == None:
                             print '空'
                         continue
                     tem.pop(0)
@@ -275,10 +277,13 @@ class ManageTimer:
                             i += 1
                             if d == ' ':
                                 j += 1
-                                if p == 1:
+                                if course_id == None:
                                     print '  %s  %s %s:在第%s节课向你请假' % (j, self.tool.get_student_name(row[0]),row[0], i-1)
+                                else:
+                                    print '此课程有未审批的假条,请先批假。'
+                                    return []
                                 data.append([teacher_id, filename[8:16], i-1, row[0]])
-                    if flag == j and p == 1:
+                    if flag == j and course_id == None:
                         print '空'
         return data
 
@@ -344,6 +349,8 @@ class ManageTimer:
         for row in data:
             if random_list.count(row[0]):
                 old = random_stu[row[0]]
+                row[4] = 'random'
+                row[5] = 'False'
                 if old == '出勤' or old == '早退' or old == '迟到':
                     row[5] = '早退'
             tem.append(row)
@@ -395,7 +402,7 @@ class ManageTimer:
                 normal_time = row[1]
         detail_data.append(['StuID', 'checkinTime', 'ProofPath', 'checkinType', 'IsSucc', 'checkinResult'])
         for stu_id in self.tool.get_stu_list(tem_list[0]):
-            detail_data.append([stu_id, ' ', ' ', ' ', ' ', '缺勤'])
+            detail_data.append([stu_id, ' ', ' ', ' ', 'False', '缺勤'])
         csv.writer(open('../data/%s_%s_%s_checkinDetail.csv' % (tem_list[4], tem_list[0], seq_id), 'wb')).writerows(detail_data)
         _t = threading.Timer(float(normal_time) * 60.0, self.set_r(2, list, tem_list[4], []))
         _t.start()
@@ -418,7 +425,7 @@ class ManageTimer:
         print '考勤状态序号：1:出勤 2:缺勤 3:请假 4:迟到 5:早退'
         for row in stu_list:
             choose = raw_input('学号' + row + '为其输入考勤状态序号')
-            d = [row, ' ', ' ', ' ', type, 'False']
+            d = [row, ' ', ' ', ' ', ' ', 'False']
             status = {'1': '出勤', '2': '缺勤', '3': '请假', '4': '迟到', '5': '早退'}
             if choose in list('12345'):
                 d[4] = status[choose]
@@ -437,7 +444,7 @@ class ManageTimer:
                     return True
         return 0
 
-    def get_recent_atd(self, list, teacher_id):  # for tea
+    def get_recent_atd(self, teacher_id):  # for tea
         a = [row for row in csv.reader(open('../data/seq.csv'))]
         a.reverse()
         for row in a:
@@ -454,10 +461,14 @@ class ManageTimer:
                     if line[5] == '迟到': cd += 1
                     if line[5] == '早退': zt += 1
                     if line[4] == 'False' : is_succ += 1
-                print '出勤率: %.2f%%' % (float(cq+cd) / (sum) * 100)
+                print '出勤率: %.2f%%' % (float(cq) / (sum) * 100)
                 print '总人数:%s 出勤:%s 请假:%s 迟到:%s 早退:%s 缺勤:%s 认证失败:%s' % (sum, cq, qj, cd, zt, qq, is_succ)
                 break
 
+    def get_sum_atd(self, teacher_id, course_id):
+        if not self.get_lea_list(teacher_id, course_id):
+            return 0
+
 if __name__ == '__main__':
     t = ManageTimer()
-    t.get_recent_atd([], '2004355')
+    t.get_lea_list('2004355', '51610055')
