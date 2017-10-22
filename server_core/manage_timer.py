@@ -494,6 +494,24 @@ class ManageTimer:
             print '第 %s 节次出勤率: %.2f%%' % (i, float(cq) / (sum) * 100)
             sum_atd += float(cq) / (sum) * 100
         print '%s的平均出勤率: %.2f%%' % (self.tool.get_course_name(course_id), sum_atd / max)
+
+    def set_time(self, teacher_id):
+        tem = []
+        for row in [row for row in csv.reader(open('../interior/time.csv'))]:
+            if row[0] == teacher_id:
+                try:
+                    num = int(raw_input('请输入1-30的整数:'))
+                    if num >= 30 and num <= 1:
+                        print '输入不合法'
+                except:
+                    print '输入不合法'
+                    return 0
+                row[1] = num
+            tem.append(row)
+        print 'set success！'
+        csv.writer(open('../interior/time.csv', 'wb')).writerows(tem)
+
 if __name__ == '__main__':
     t = ManageTimer()
+    t.set_time('2004355')
     t.get_sum_atd('2004355', '51610055')

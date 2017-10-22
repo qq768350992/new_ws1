@@ -100,7 +100,10 @@ class TeacherCore:
 
     def show_sum_adt(self):
         course_id = raw_input('输入课程号：')
+        self.manager.get_sum_atd(self.teacher_id, course_id)
 
+    def set_time(self):
+        self.manager.set_time(self.teacher_id)
 
 if __name__ == '__main__':
     t = TeacherCore('2004355')
