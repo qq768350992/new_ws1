@@ -2,30 +2,42 @@
 import re
 import time
 import configparser
-
+from databaseoperation import opt
 
 class AssistTools:
     def __init__(self):
-        pass
+        self.opt = opt.Opt()
 
     #  0.1.1 获取本次考勤次序号(course_id）
     def get_seqid(self, course_id):
-        pass
+        data = self.opt.readfile("seq")
+        if not data:
+            self.opt.newfile("seq")
+            return False
+        else:
+            return len([row[2] for row in data if row[1] == course_id])
 
     #  0.1.2获取teacher_id(wechat_id)
-    def get_teaid_inwechat(self, wechat_id): pass
+    def get_teaid_inwechat(self, wechat_id):
+        return [row[0] for row in self.opt.readfile("teacherInfo") if row[2] == wechat_id]
 
+    # 检查wechat_id是否存在
     #  0.1.3获取teacher_id(course_id)
-    def get_teaid_incourseid(self, course_id): pass
+    def get_teaid_incourseid(self, course_id):
+        return [row[2] for row in self.opt.readfile("courseInfo") if row[0] == course_id]
 
     #  0.1.4获取student_id(wechat_id)
-    def get_stuid(self, wechat_id): pass
+    def get_stuid(self, wechat_id):
+        return [row[0] for row in self.opt.readfile("studentInfo") if row[3] == wechat_id]
 
     #  0.1.5获取学生全部的课程号(wechat_id)
-    def get_courseid_stu(self, wechat_id): pass
+    def get_courseid_stu(self, wechat_id):
+        return [row[0] for row in self.opt.readfile("courseInfo") if [row[2] for row in
+                 self.opt.readfile("studentInfo") if row[0] == self.get_stuid(wechat_id)[0]].count(row[3])>=1]
 
     #  0.1.6获取教师所有课程号(wechat_id)
-    def get_courseid_tea(self, wechat_id): pass
+    def get_courseid_tea(self, wechat_id):
+        return list(set([row[0] for row in self.opt.readfile("courseInfo") if row[2] == self.get_teaid_inwechat(wechat_id)[0]]))
 
     #  0.1.7获取班级名列表（course_id）
     def get_classnamelist(self, course_id): return ["计科1601"]
@@ -33,7 +45,7 @@ class AssistTools:
     #  0.1.8 获取timewindow(url)
     def get_timerwindow(self):
         config = configparser.ConfigParser()
-        config.read('../interior/settings.ini') #####################################################################################################
+        config.read('../interior/settings.ini')
         return float(config.get('time', 'timewindow'))*60.0
 
     #  0.1.10获取当前时间()
@@ -67,5 +79,6 @@ class AssistTools:
 
 if __name__ == "__main__":
     t = AssistTools()
+    print(t.get_courseid_tea("wonka80"))
 
 

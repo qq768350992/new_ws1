@@ -3,5 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/data/detail/2004355_51610055_1_checkinDetail.csv" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/data/random_detail/2004355_51610055_1_randomcheckinDetail.csv" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/interior/studentInfo.csv" charset="GBK" />
+    <file url="file://$PROJECT_DIR$/interior/teacherInfo.csv" charset="GBK" />
   </component>
 </project>
