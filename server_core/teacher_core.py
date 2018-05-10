@@ -15,6 +15,8 @@ class TeacherCore:
         random_list = []  # 抽点名单
         if self.manager.course_check(self.teacher_id, course_id) == 0:
             return 0
+
+
         tem_list = [course_id, 1, self.tool.get_end_time(), self.tool.get_over_time(self.tool.get_local_time()), self.teacher_id, random_list]
         self.manager.write_seq(self.teacher_id, course_id)
         self.manager.start_init(tem_list, list)
@@ -102,8 +104,6 @@ class TeacherCore:
         course_id = raw_input('输入课程号：')
         self.manager.get_sum_atd(self.teacher_id, course_id)
 
-    def set_time(self):
-        self.manager.set_time(self.teacher_id)
 
 if __name__ == '__main__':
     t = TeacherCore('2004355')
