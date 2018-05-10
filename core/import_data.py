@@ -9,7 +9,7 @@ from core import format_check
 
 class ImportData:
     def __init__(self):
-        pass
+        self.opt = opt.Opt()
 
     def import_file(self, url):
         error_msg = [["File:'" + url[0] + "'"]]
