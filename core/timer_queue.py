@@ -1,12 +1,14 @@
 #! coding:utf-8
 import re, configparser, threading
 from core import assist_tools
+from databaseoperation import opt
 
 class TimerQueue:
     def __init__(self):
+        self.opt = opt.Opt()
         self.tool = assist_tools.AssistTools()
         self.timer_list = [   ["wechat1", "123", [52200, 57900],["软件1601","软件1602"]],
-                              ["wechat2", "213", [52200, 57900],["软件1603","软件1604"]], ]
+                              ["wonka80", "51610189", [52200, 57900],["软件1603","软件1604"]], ]
     def init_tcb(self, wechat_id, course_id):
         return [wechat_id, course_id, self.get_sectime(self.tool.get_localtime()), self.tool.get_classnamelist(course_id)]
 
@@ -69,7 +71,23 @@ class TimerQueue:
             return True
         return False
 
-    # 5.0 获取教师课程号
+    #  4.10 获取教师课程号
     def get_courseid(self, wechat_id):
         if self.timer_list:
             return [row[1] for row in self.timer_list if row[0]==wechat_id]
+
+    #  4.11 TMER计算考勤结果（wechat_id, course_id）
+    def calculate_Timer(self, wechat_id, course_id):
+        if self.isexist_wechat(wechat_id):
+            if not self.tool.is_resultEffective(course_id):
+                args = (self.tool.get_teaid_inwechat(wechat_id)[0], course_id, self.tool.get_seqid(course_id))
+                self.opt.delfile("detail", args)
+                self.opt.delfile("randomdetail", args)
+                return False
+            else:
+                self.tool.mergeResult(course_id)
+                self.tool.update_sumfile(course_id)
+if __name__ == "__main__":
+    t = TimerQueue()
+    t.calculate_Timer("wonka80", "51610189")
+

@@ -1,5 +1,5 @@
 # !coding:utf-8
-import csv
+import csv,os
 
 class Opt:
     def __init__(self):
@@ -25,39 +25,54 @@ class Opt:
         if url:
             if args:
                 if len(args) == 2:
-                    url = url.replace("0", str(args[0])).replace("1", str(args[1]))
+                    url = url.replace("1", str(args[1]),1).replace("0", str(args[0]),1)
                 elif len(args) == 3:
-                    url = url.replace("0", str(args[0])).replace("1", str(args[1])).replace("2", str(args[2]))
-            csv.writer(open(url, 'w+', newline='')).writerow(self.header.get(filename))
+                    url = url.replace("2", str(args[2]),1).replace("1", str(args[1]),1).replace("0", str(args[0]),1)
+            if not os.path.isfile(url):
+                csv.writer(open(url, 'w+', newline='')).writerow(self.header.get(filename))
 
     def readfile(self, filename, args=None):
         url = self.url.get(str(filename))
         if url:
             if args :
-                if len(args)==2:
-                    url = url.replace("0", str(args[0])).replace("1", str(args[1]))
-                elif len(args)==3:
-                    url = url.replace("0", str(args[0])).replace("1", str(args[1])).replace("2", str(args[2]))
+                if len(args) == 2:
+                    url = url.replace("1", str(args[1]),1).replace("0", str(args[0]),1)
+                elif len(args) == 3:
+                    url = url.replace("2", str(args[2]),1).replace("1", str(args[1]),1).replace("0", str(args[0]),1)
             try:
                 # return [row for row in csv.reader(open(url), encoding='utf-8')]
                 return [row for row in csv.reader(open(url))]
             except IOError:
-                return False
+                return []
 
     def writefile(self, data, filename, args=None, type="w"):
         url = self.url.get(str(filename))
+        print(url)
+
         if url:
             if args:
-                if len(args)==2:
-                    url = url.replace("0", str(args[0])).replace("1", str(args[1]))
-                elif len(args)==3:
-                    url = url.replace("0", str(args[0])).replace("1", str(args[1])).replace("2", str(args[2]))
+                if len(args) == 2:
+                    url = url.replace("1", str(args[1]),1).replace("0", str(args[0]),1)
+                elif len(args) == 3:
+                    url = url.replace("2", str(args[2]),1).replace("1", str(args[1]),1).replace("0", str(args[0]),1)
             if type == "w" or type == "w+":
-                csv.writer(open(url, 'w+', newline='')).writerow(data)
+                csv.writer(open(url, 'w+', newline='')).writerows(data)
             elif type == "a" or type == "a+":
-                csv.writer(open(url, 'a+', newline='')).writerow(data)
-#
-# if __name__ == "__main__":
-#     t = Opt()
-#     t.readfile("seq")
-#     t.readfile("randomdetail")
+                csv.writer(open(url, 'a+', newline='')).writerows(data)
+
+    def delfile(self, filename, args=None):
+        url = self.url.get(str(filename))
+        if url:
+            if args:
+                if len(args) == 2:
+                    url = url.replace("1", str(args[1]), 1).replace("0", str(args[0]), 1)
+                elif len(args) == 3:
+                    url = url.replace("2", str(args[2]), 1).replace("1", str(args[1]), 1).replace("0", str(args[0]), 1)
+            try:
+                os.remove(url)
+            except:
+                print("无法删除"+filename+".csv")
+
+if __name__ == "__main__":
+    t = Opt()
+    t.delfile("seq")
