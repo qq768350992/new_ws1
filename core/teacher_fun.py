@@ -20,6 +20,8 @@ class TeacherFun:
             if self.check.wechat_tea_check(wechat_id) and self.check.courseid_check(wechat_id, course_id):
                 self.timer.enter_qeque(wechat_id, course_id)
                 print("auto: " + wechat_id + " 可以自助考勤")
+        #  删除random文件
+        pass
         #  维护 detail.csv   ###################################################################################
         pass
         #  维护 seq.csv   不是我该做的，我不做  ###################################################################
@@ -31,7 +33,11 @@ class TeacherFun:
            and self.tool.get_localtime() < self.timer.get_endtime(wechat_id)-5*60:
             print("random: "+wechat_id+" 可以抽点")
             nums = int(input("请输入抽点人数:"))
-            self.tool.init_randomdetailcsv(self.timer.get_courseid(wechat_id), self.tool.generate_random(nums))
+            # 检查
+            # 检查
+            # 检查
+            random_list = self.tool.generate_random(self.timer.get_courseid(wechat_id), nums)
+            self.tool.init_randomdetailcsv(self.timer.get_courseid(wechat_id), random_list)
             #  维护 seq.csv   不是我该做的，我不做  ###################################################################
             pass
 

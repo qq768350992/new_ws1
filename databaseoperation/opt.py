@@ -6,18 +6,20 @@ class Opt:
         self.url = {
             "sum"          :  "../data/sum/0_1_sum.csv",
             "detail"       :  "../data/detail/0_1_2_checkinDetail.csv",
-            "randomdetail" :  "../data/random_detail/0_1_2_randomcheckinDetail.csv",
+            "randomdetail" :  "../data/random_detail/0_1_randomcheckinDetail.csv",
             "seq"          :  "../data/seq.csv",
+            "lea"          :  "../data/lea.csv",
             "setting"      :  "../interior/settings.ini",
             "courseInfo"   :  "../interior/courseInfo.csv",
             "teacherInfo"  :  "../interior/teacherInfo.csv",
             "studentInfo"  :  "../interior/studentInfo.csv",
         }
         self.header = {
-            "sum": ["stuid"],
+            "sum": ["StuID"],
             "detail": ["StuID","checkinTime","ProofPath","checkinType","IsSucc","checkinResult"],
             "randomdetail": ["StuID","checkinTime","ProofPath","checkinType","IsSucc","checkinResult"],
             "seq": ["TeacherID","CourseID","SeqID","StartTime"],
+            "lea": ["StuID", "courseID", "SeqID", "SubmitleaTime", "ProofPath"]
         }
 
     def newfile(self, filename, args=None):
@@ -34,7 +36,7 @@ class Opt:
     def readfile(self, filename, args=None):
         url = self.url.get(str(filename))
         if url:
-            if args :
+            if args:
                 if len(args) == 2:
                     url = url.replace("1", str(args[1]),1).replace("0", str(args[0]),1)
                 elif len(args) == 3:
@@ -47,8 +49,6 @@ class Opt:
 
     def writefile(self, data, filename, args=None, type="w"):
         url = self.url.get(str(filename))
-        print(url)
-
         if url:
             if args:
                 if len(args) == 2:
@@ -73,6 +73,24 @@ class Opt:
             except:
                 print("无法删除"+filename+".csv")
 
+    def alteritem(self, filename, args=None, keys=None):
+        #keys = (pos ,cmpwords, aimpos, newwords)
+        temp = []
+        for row in self.readfile(filename, args):
+            if row[keys[0]]==keys[1]:
+                row[keys[2]] = keys[3]
+            temp.append(row)
+        self.writefile(temp, filename, args)
+
+    def delline(self, filename, args=None, keys=None):
+        #keys = (pos ,cmpwords)
+        temp = []
+        for row in self.readfile(filename, args):
+            if row[keys[0]] == keys[1]:
+                continue
+            temp.append(row)
+        self.writefile(temp, filename, args)
+
 if __name__ == "__main__":
     t = Opt()
-    t.delfile("seq")
+    t.alteritem("lea", None, (0, "2004355", 3, "2018-5-11"))

@@ -80,9 +80,7 @@ class TimerQueue:
     def calculate_Timer(self, wechat_id, course_id):
         if self.isexist_wechat(wechat_id):
             if not self.tool.is_resultEffective(course_id):
-                args = (self.tool.get_teaid_inwechat(wechat_id)[0], course_id, self.tool.get_seqid(course_id))
-                self.opt.delfile("detail", args)
-                self.opt.delfile("randomdetail", args)
+                self.opt.delfile("detail", (self.tool.get_teaid_inwechat(wechat_id)[0], course_id, self.tool.get_seqid(course_id)))
                 return False
             else:
                 self.tool.mergeResult(course_id)
