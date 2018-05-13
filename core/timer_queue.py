@@ -7,7 +7,7 @@ class TimerQueue:
     def __init__(self):
         self.opt = opt.Opt()
         self.tool = assist_tools.AssistTools()
-        self.timer_list = [   ["wechat1", "123", [52200, 57900],["软件1601","软件1602"]],
+        self.timer_list = [   ["wechat1", "51610041", [52200, 57900],["软件1601","软件1602"]],
                               ["wonka80", "51610189", [52200, 57900],["软件1603","软件1604"]], ]
     def init_tcb(self, wechat_id, course_id):
         return [wechat_id, course_id, self.get_sectime(self.tool.get_localtime()), self.tool.get_classnamelist(course_id)]
@@ -15,7 +15,7 @@ class TimerQueue:
     #  4.1 获取sectime(url) 上课区间包括开始和结束
     def get_sectime(self,start_time):
         cf = configparser.ConfigParser()
-        cf.read('../interior/settings.ini')  ###########################################################################################################3
+        cf.read(self.opt.url.get("setting"))
         info = [[row[0],row[1]] for row in map((lambda x: [int(x[0])*3600+int(x[1])*60, int(x[2])*3600+int(x[3])*60]),
                                                map((lambda x: re.split('-|:', x[1])), cf.items('sectime')))]
         if start_time < info[0][0] or int(start_time) > info[-1][0]:
@@ -85,6 +85,7 @@ class TimerQueue:
             else:
                 self.tool.mergeResult(course_id)
                 self.tool.update_sumfile(course_id)
+
 if __name__ == "__main__":
     t = TimerQueue()
     t.calculate_Timer("wonka80", "51610189")

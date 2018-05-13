@@ -130,7 +130,7 @@ class AssistTools:
         return random.sample(self.get_allstuID(course_id), nums)
 
     #  0.9 格式化统计结果(course_id) ,打印出此课程对应每个人的考勤状况，每节课出勤率，平均出勤率
-    def sumup_format(self, course_id): pass
+    def sumup_format(self, course_id): passs
 
     #  0.10 更新sum.csv
     def update_sumfile(self, course_id):

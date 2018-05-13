@@ -15,11 +15,11 @@ class TeacherFun:
 
     #  2.1 自助考勤（wechat_id，course_id，timer_list）
     def checkin_auto(self, wechat_id, course_id):
-        r_lock = threading.RLock()     # mutex互斥
-        with r_lock:
-            if self.check.wechat_tea_check(wechat_id) and self.check.courseid_check(wechat_id, course_id):
-                self.timer.enter_qeque(wechat_id, course_id)
-                print("auto: " + wechat_id + " 可以自助考勤")
+        # r_lock = threading.RLock()     # mutex互斥
+        # with r_lock:
+        if self.check.wechat_tea_check(wechat_id) and self.check.courseid_check(wechat_id, course_id):
+            self.timer.enter_qeque(wechat_id, course_id)
+            print("auto: " + wechat_id + " 可以自助考勤")
         #  删除random文件
         pass
         #  维护 detail.csv   ###################################################################################
