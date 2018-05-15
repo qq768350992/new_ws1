@@ -91,6 +91,17 @@ class Opt:
             temp.append(row)
         self.writefile(temp, filename, args)
 
+    def init_clear(self, filename, args=None):
+        url = self.url.get(str(filename))
+        if url:
+            if args:
+                if len(args) == 2:
+                    url = url.replace("1", str(args[1]), 1).replace("0", str(args[0]), 1)
+                elif len(args) == 3:
+                    url = url.replace("2", str(args[2]), 1).replace("1", str(args[1]), 1).replace("0", str(args[0]), 1)
+            csv.writer(open(url, 'w+', newline='')).writerow(self.header.get(filename))
+            print(filename+args[0]+"_"+args[1]+"已初始化")
+
 if __name__ == "__main__":
     t = Opt()
     t.alteritem("lea", None, (0, "2004355", 3, "2018-5-11"))

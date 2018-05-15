@@ -13,7 +13,7 @@ class AssistTools:
         if data:
             return len([row[2] for row in data if row[1] == course_id])
         self.opt.newfile("seq")
-        return -1
+        return 0
 
     #  0.1.2获取teacher_id(wechat_id)
     def get_teaid_inwechat(self, wechat_id):
@@ -27,9 +27,9 @@ class AssistTools:
     def get_stuid(self, wechat_id):
         return [row[0] for row in self.opt.readfile("studentInfo") if row[3] == wechat_id]
 
-    #  0.1.5获取学生全部的课程号(wechat_id)
-    def get_courseid_stu(self, wechat_id):
-        return [row[0] for row in self.opt.readfile("courseInfo") if [row[2] for row in self.opt.readfile("studentInfo") if row[0] == self.get_stuid(wechat_id)[0]].count(row[3])>=1]
+    # #  0.1.5获取学生全部的课程号(wechat_id)
+    # def get_courseid_stu(self, wechat_id):
+    #     return [row[0] for row in self.opt.readfile("courseInfo") if [row[2] for row in self.opt.readfile("studentInfo") if row[0] == self.get_stuid(wechat_id)[0]].count(row[3])>=1]
 
     #  0.1.6获取教师所有课程号(wechat_id)
     def get_courseid_tea(self, wechat_id):
@@ -54,7 +54,8 @@ class AssistTools:
         return float(config.get('time', 'timewindow'))*60
 
     #  0.2 初始化detail.csv(course_id)  seqid++
-    def init_detailcsv(self, course_id):
+    def init_detailcsv(self, course_id, detail=None):
+        # Type = ["auto", "出勤"]
         tea_id = self.get_teaid_incourseid(course_id)
         if tea_id:
             args = (tea_id[0], course_id, self.get_seqid(course_id))
@@ -62,7 +63,7 @@ class AssistTools:
             Dmsg = self.opt.readfile("detail", args)
             if len(Dmsg) < 2:
                 for row in self.get_allstuID(course_id):
-                    Dmsg.append([row, " ", " ", "auto", " ", " "])
+                    Dmsg.append([row, " ", " ", detail[0], " ", detail[1]])
             self.opt.writefile(Dmsg, "detail", args)
 
     #  0.3 初始化randomdetail.csv(course_id, random_list)
@@ -119,18 +120,20 @@ class AssistTools:
         if tea_id:
             args = (tea_id[0], course_id, self.get_seqid(course_id))
             Rmsg = self.opt.readfile("randomdetail", args[0:-1])
-            if Rmsg:
+            print(Rmsg)
+            if len(Rmsg)>1:
                 for row in self.opt.readfile("detail", args):
                     for msg in Rmsg:
                         if row[0] == msg[0] and len(row[-1])<5:
                             self.opt.alteritem("detail", args, (0, msg[0], -1, msg[-1]))
+                            print("抽点数据合并成功")
 
     #  0.8 生成random列表(nums)
     def generate_random(self, course_id, nums):
-        return random.sample(self.get_allstuID(course_id), nums)
+        return random.sample(list(set(self.get_allstuID(course_id))-set([row[0] for row in self.opt.readfile("lea") if row[1] == course_id and row[2] == self.get_seqid(course_id)])), int(nums))
 
     #  0.9 格式化统计结果(course_id) ,打印出此课程对应每个人的考勤状况，每节课出勤率，平均出勤率
-    def sumup_format(self, course_id): passs
+    def sumup_format(self, course_id): pass
 
     #  0.10 更新sum.csv
     def update_sumfile(self, course_id):
@@ -151,7 +154,13 @@ class AssistTools:
                 j+=1
         self.opt.writefile(Smsg, "sum", args)
 
+    # 0.11 更新seq.csv
+    def updata_seq(self, course_id):
+        self.opt.writefile([[self.get_teaid_incourseid(course_id)[0], course_id, self.get_seqid(course_id) + 1, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())]] ,"seq", None, "a")
+
+
 if __name__ == "__main__":
     t = AssistTools()
-    print(t.mergeResult("51610055"))
+    #print(t.updata_seq("51610055"))
+
 
