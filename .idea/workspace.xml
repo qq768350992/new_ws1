@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f701e9fc-8f3f-4a24-8718-3e0565d29834" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/userinterface/__init__.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/userinterface/ui.py" />
+    <list default="true" id="f701e9fc-8f3f-4a24-8718-3e0565d29834" name="Default" comment="1">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/core/assist_tools.py" afterPath="$PROJECT_DIR$/core/assist_tools.py" />
-      <change beforePath="$PROJECT_DIR$/core/check_util.py" afterPath="$PROJECT_DIR$/core/check_util.py" />
-      <change beforePath="$PROJECT_DIR$/core/stundent.py" afterPath="$PROJECT_DIR$/core/stundent_fun.py" />
-      <change beforePath="$PROJECT_DIR$/core/teacher_fun.py" afterPath="$PROJECT_DIR$/core/teacher_fun.py" />
-      <change beforePath="$PROJECT_DIR$/core/timer_queue.py" afterPath="$PROJECT_DIR$/core/timer_queue.py" />
       <change beforePath="$PROJECT_DIR$/data/sum/2004633_51610189_sum.csv" afterPath="$PROJECT_DIR$/data/sum/2004633_51610189_sum.csv" />
-      <change beforePath="$PROJECT_DIR$/databaseoperation/opt.py" afterPath="$PROJECT_DIR$/databaseoperation/opt.py" />
-      <change beforePath="$PROJECT_DIR$/design.docx" afterPath="$PROJECT_DIR$/design.docx" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -249,6 +240,11 @@
             <path>
               <item name="new_ws" type="b2602c69:ProjectViewProjectNode" />
               <item name="new_ws" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="new_ws" type="b2602c69:ProjectViewProjectNode" />
+              <item name="new_ws" type="462c0819:PsiDirectoryNode" />
+              <item name="core" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="new_ws" type="b2602c69:ProjectViewProjectNode" />
@@ -578,7 +574,14 @@
       <option name="project" value="LOCAL" />
       <updated>1526400274913</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="1">
+      <created>1526400286936</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1526400286936</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TodoView">
