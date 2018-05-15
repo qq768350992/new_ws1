@@ -73,12 +73,15 @@ class Opt:
             except:
                 print("无法删除"+filename+".csv")
 
-    def alteritem(self, filename, args=None, keys=None):
-        #keys = (pos ,cmpwords, aimpos, newwords)
+    def alteritem(self, filename, args=None, keys=None, data=None):
+        # keys = (pos ,cmpwords, aimpos, newwords)
         temp = []
         for row in self.readfile(filename, args):
             if row[keys[0]]==keys[1]:
-                row[keys[2]] = keys[3]
+                if data:
+                    row = data
+                else:
+                    row[keys[2]] = keys[3]
             temp.append(row)
         self.writefile(temp, filename, args)
 

@@ -15,7 +15,7 @@ class ImportData:
         error_msg = [["File:'" + url[0] + "'"]]
         try:
             data = [row for row in csv.reader(open(url[0], encoding='utf-8'))]
-            if not format_check.file_header(data[0], error_msg):
+            if format_check.file_header(data[0], error_msg):
                 print(url[0] + ": 格式出现致命错误，缺少关键的头信息"); return
             header = data.pop(0)
             if url[1] == "teacherInfo.csv":
@@ -47,10 +47,8 @@ class ImportData:
     '    opt_class_nums: 逐个提取data中的ClassNums，调用opt_split(ClassName), 得到数据项列表, 添加剩余信息即可。
     '                    重复上述操作，知道将ClassNums处理完。                                           '''
     def opt_class_nums(self, data):  # data 不含 header
-        t1 = []; temp = []; i = 0  # t1 = temp = [] 会出错
-        for row in data:
-            t1.append([row[8]])
-        for row in t1:
+        temp = []; i = 0  # t1 = temp = [] 会出错
+        for row in [row[8] for row in data]:
             for opt in self.opt_split(row):
                 tt = data[i]
                 if opt[0]:  # 排除空
@@ -68,28 +66,21 @@ class ImportData:
                 for i in range(int(row[k-4:k]), int(row[-4:])+1):
                     temp.append([str(row[:k-4]) + str(i)])
         return temp
-    '''
-    '	dis_del_repeat: 针对学生、教师文件的去重 主键是: ["ID"] , ["WeChatID"]  
-    '	col_del_repeat:	针对课程文件的去重	   主键是: ["CourseID", "ClassNums"]  
-    '																	'''
-    def dis_del_repeat(self, data, key): # 调用了两次
-        t1 = set(); temp = []
-        for row in data:
-            t1.add(row[key])  # list
-        for row in list(t1):  # list
+
+    def dis_del_repeat(self, data, key):  # 调用了两次  针对学生、教师文件的去重 主键是: ["ID"] , ["WeChatID"]
+        temp = []
+        for row in list(set([row[key] for row in data])):
             for hh in data:
                 if hh[key] == row:
                     temp.append(hh)
-                    break
-        return temp
+                    return temp
 
-    def col_del_repeat(self, data):
+    def col_del_repeat(self, data):  # 针对课程文件的去重	   主键是: ["CourseID", "ClassNums"]
         t1 = set(); temp = []
         for row in data:
-            t1.add(str([row[2], row[8]]))  # str
+            t1.add(str([row[2], row[8]]))
         for row in t1:  # str
             for hh in data:
                 if str([hh[2], hh[8]]) == row:
                     temp.append(hh)
-                    break
-        return temp
+                    return temp

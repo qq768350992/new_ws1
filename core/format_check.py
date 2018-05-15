@@ -16,7 +16,7 @@ def stu_check(data, error_msg):     # 最后更新error_msg 减少i/o
     for row in data:
         check_id(row[0], 12, error_msg, str(data.index(row)+2))
         check_name(row[1], error_msg, str(data.index(row)+2))
-        check_class(row[2], error_msg, str(data.index(row)+2))  # ClassName
+        check_class(row[2], error_msg, str(data.index(row)+2))
         check_wechat(row[3], error_msg, str(data.index(row)+2))
 
 
@@ -38,10 +38,7 @@ def course_check(data, error_msg):
 def file_header(header, error_msg):
     for row in header:
         if re.findall('^([a-zA-Z])$', row):
-            error_msg.append(["    致命错误: 缺少关键的头信息"])
-            return False
-    return True
-
+            error_msg.append(["    致命错误: 缺少关键的头信息"]) ;return True
 
 def check_id(element, num, error_msg, line, b=0):
     if not re.findall("^[\d]{"+str(num)+"}$", element):

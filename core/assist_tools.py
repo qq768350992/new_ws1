@@ -27,9 +27,9 @@ class AssistTools:
     def get_stuid(self, wechat_id):
         return [row[0] for row in self.opt.readfile("studentInfo") if row[3] == wechat_id]
 
-    # #  0.1.5获取学生全部的课程号(wechat_id)
-    # def get_courseid_stu(self, wechat_id):
-    #     return [row[0] for row in self.opt.readfile("courseInfo") if [row[2] for row in self.opt.readfile("studentInfo") if row[0] == self.get_stuid(wechat_id)[0]].count(row[3])>=1]
+    #  0.1.5获取学生全部的课程号(wechat_id)
+    def get_courseid_stu(self, wechat_id):
+        return [row[0] for row in self.opt.readfile("courseInfo") if [row[2] for row in self.opt.readfile("studentInfo") if row[0] == self.get_stuid(wechat_id)[0]].count(row[3])>=1]
 
     #  0.1.6获取教师所有课程号(wechat_id)
     def get_courseid_tea(self, wechat_id):
@@ -55,16 +55,16 @@ class AssistTools:
 
     #  0.2 初始化detail.csv(course_id)  seqid++
     def init_detailcsv(self, course_id, detail=None):
-        # Type = ["auto", "出勤"]
         tea_id = self.get_teaid_incourseid(course_id)
         if tea_id:
-            args = (tea_id[0], course_id, self.get_seqid(course_id))
+            args = (tea_id[0], course_id, self.get_seqid(course_id) + 1)
             self.opt.newfile("detail", args)
             Dmsg = self.opt.readfile("detail", args)
             if len(Dmsg) < 2:
                 for row in self.get_allstuID(course_id):
-                    Dmsg.append([row, " ", " ", detail[0], " ", detail[1]])
+                    Dmsg.append([row, "null", "null", detail[0], "null", detail[1]])
             self.opt.writefile(Dmsg, "detail", args)
+            print("初始化detail成功")
 
     #  0.3 初始化randomdetail.csv(course_id, random_list)
     def init_randomdetailcsv(self, course_id, random_list):
@@ -74,15 +74,17 @@ class AssistTools:
             self.opt.newfile("randomdetail", args)
             header = [self.opt.header.get("randomdetail")]
             for row in random_list:
-                header.append([row, " ", " ", "auto", " ", " "])
+                header.append([row, "null", "null", "auto", "null", "NULL"])
             self.opt.writefile(header, "randomdetail", args)
+            print("初始化randomdetail成功")
+
 
     #  0.4 考勤是否有效（course_id） 当前seqid
     def is_resultEffective(self, course_id):
         tea_id = self.get_teaid_incourseid(course_id)
         if tea_id:
             data =  [row[-1] for row in self.opt.readfile("detail", (tea_id[0], course_id, self.get_seqid(course_id)))]
-            if data.count(" ") >= len(data)*0.8 or data.count("缺勤") >= len(data)*0.8:
+            if data.count("NULL") >= len(data)*0.8 or data.count("缺勤") >= len(data)*0.8:
                 return False
         return True
 
@@ -102,7 +104,7 @@ class AssistTools:
                         self.opt.delline("lea", None, (0, row[0]))
                         self.opt.alteritem("detail", args, (0, row[0], -1, "请假"))
                     elif op == "2":
-                        self.opt.alteritem("sum", args[0:-1], (0, row[0], args[-1], " "))
+                        self.opt.alteritem("sum", args[0:-1], (0, row[0], args[-1], "NULL"))
                     elif op == "3":
                         print("seq: "+row[2]+"\ntime: "+row[3]+"\nProof: "+row[4])
                         continue
@@ -155,12 +157,43 @@ class AssistTools:
         self.opt.writefile(Smsg, "sum", args)
 
     # 0.11 更新seq.csv
-    def updata_seq(self, course_id):
-        self.opt.writefile([[self.get_teaid_incourseid(course_id)[0], course_id, self.get_seqid(course_id) + 1, time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())]] ,"seq", None, "a")
+    def update_seq(self, course_id):
+        self.opt.writefile([[self.get_teaid_incourseid(course_id)[0], course_id, self.get_seqid(course_id) + 1, self.format_time()]] ,"seq", None, "a")
+        print("更新seq成功"+"\n课程号: "+course_id+"\n考勤次序号: "+str(self.get_seqid(course_id)))
 
+    # 0.12 修改checkin_result
+    def alterCheckinResult(self, stu_id, checkin_result, filename, args=None):
+        self.opt.alteritem(filename, args, (0, stu_id, -1, checkin_result))
+        print(str(args)+"修改成功"+filename)
+
+    # 0.13 获取学生状态
+    def getCheckinResult(self, filename, args=None, keys=None):
+        if filename == "lea":  # keys=[stu_id, course_id, seq_id]
+            return [row for row in self.opt.readfile(filename, args) if keys == row[0:3]]
+        else:   # keys=stu_id
+            return [row[5] for row in self.opt.readfile(filename, args) if keys == row[0]]
+
+    # 0.11 更新lea.csv
+    def update_lea(self, data):
+        self.opt.writefile(data,"lea",None,"a")
+
+    # 0.12 格式化时间
+    def format_time(self):
+        return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+    # 0.13 修改行
+    def alterCheckinLine(self, student_id, row, filename, args):
+        self.opt.alteritem(filename, args, [0, student_id], row)
+        print(str(args) + "修改行成功" + filename)
+
+    # 根据学生，修该某个内容
+    def alterItem(self, filename, args=None, cmp=None, keys=None):
+        self.opt.alteritem(filename, args, (0, cmp, keys[0], keys[1]))
+        print(str(args) + "修改成功" + filename)
 
 if __name__ == "__main__":
     t = AssistTools()
-    #print(t.updata_seq("51610055"))
-
+    #print(t.update_seq("51610055"))
+    # print(t.getCheckinResult("lea", None, ["201416920508","51610055","2"]))
+    #print(t.getCheckinResult("randomdetail", ["2004355", "51610055"], "201416920508"))
 

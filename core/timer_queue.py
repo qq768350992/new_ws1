@@ -8,11 +8,11 @@ class TimerQueue:
     def __init__(self):
         self.opt = opt.Opt()
         self.tool = assist_tools.AssistTools()
-        self.timer_list = [   ["Tp_rt55", "51610041", [52200, 57900], ["软件工程1601","软件工程1602"], "32000"],
-                              ["wonka80", "51610189", [52200, 57900], ["软件工程1603","软件工程1604"],"32001"]
+        self.timer_list = [   ["Tp_rt55", "51610041", [52200, 57900], ["软件工程1601","软件工程1602"], "32000","-1"],
+                              ["wonka80", "51610189", [52200, 57900], ["软件工程1603","软件工程1604"],"32001","88888"]
                         ]
     def init_tcb(self, wechat_id, course_id):
-        return [wechat_id, course_id, self.get_sectime(self.tool.get_localtime()), self.tool.get_classnamelist(course_id)]
+        return [wechat_id, course_id, self.get_sectime(self.tool.get_localtime()), self.tool.get_classnamelist(course_id), self.tool.get_localtime(), "-1"]
 
     #  4.1 获取sectime(url) 上课区间包括开始和结束
     def get_sectime(self,start_time):
@@ -77,9 +77,8 @@ class TimerQueue:
 
     #  4.9 根据course_id检测是否在队列（course_id）
     def isexist_courseid(self, course_id):
-        if self.timer_list and [row for row in self.timer_list if row[1]==course_id]:
-            return True
-        return False
+        if self.timer_list:
+            return [row for row in self.timer_list if row[1]==course_id]
 
     #  4.10 获取教师课程号
     def get_courseid(self, wechat_id):
@@ -96,8 +95,24 @@ class TimerQueue:
     #             self.tool.mergeResult(course_id)
     #             self.tool.update_sumfile(course_id)
 
+    # 4.12 is_valueTime（ ）
+    def is_valueTime_Detail(self, course_id, timelimit):
+        return int(self.tool.get_localtime()) - int([row[4] for row in self.timer_list if row[1] == course_id][0]) < int(timelimit)
+
+    # 4.13
+    def is_valueTime_Ramdom(self, course_id, timelimit):
+        return int(self.tool.get_localtime()) - int([row[5] for row in self.timer_list if row[1] == course_id][0]) < int(timelimit)
+
+    # 4.14 初始化ramdomtimer
+    def initRamdomTimer(self, course_id):
+        for row in self.timer_list:
+            if row[1] == course_id:
+                self.timer_list[self.timer_list.index(row)] = [row[0:-1], self.tool.get_localtime()]
+
 if __name__ == "__main__":
     t = TimerQueue()
     #t.enter_qeque("wonka80", '51610189')
-    t.depart_queque("wonka80", '51610189')
+    #t.depart_queque("wonka80", '51610189')
+    #print(t.is_valueTime_Detail('51610189', 50))
     #t.calculate_Timer("wonka80", "51610189")
+
