@@ -23,11 +23,11 @@ class TeacherFun:
     #  2.2 抽点（wechat_id, timer_list)
     def checkin_random(self, wechat_id):
         if self.check.wechat_tea_check(wechat_id) and self.timer.isexist_wechat(wechat_id) \
-           and self.tool.get_localtime() < self.timer.get_endtime(wechat_id)-5*60:
+           and int(self.tool.get_localtime()) < self.timer.get_endtime(wechat_id)-5*60:
             print("random: "+wechat_id+" 可以抽点")
             nums = int(input("请输入抽点人数:"))
-            self.check.numsrandom_check(nums)
             course_id = self.timer.get_courseid(wechat_id)
+            self.check.numsrandom_check(nums, course_id)
             random_list = self.tool.generate_random(course_id, nums)
             self.tool.init_randomdetailcsv(course_id, random_list)
             self.tool.update_seq(course_id)
@@ -46,7 +46,7 @@ class TeacherFun:
     #  2.4 修改（wechat_id，course_id，seq_id）
     def checkin_alter(self,wechat_id, course_id, seq_id):
         if self.check.wechat_tea_check(wechat_id) and self.check.courseid_check(wechat_id, course_id) \
-           and self.check.isseqexist_check(seq_id)and not self.timer.isexist_wechat(wechat_id):
+           and self.check.seq_check(seq_id, course_id)and not self.timer.isexist_wechat(wechat_id):
             if input("是否显示学号（输入1显示）:") == "1":print(self.tool.get_allstuID(course_id))
             while(1):
                 stu_id = input("请输入学号（输入0退出）:")

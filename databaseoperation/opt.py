@@ -46,6 +46,7 @@ class Opt:
                 return [row for row in csv.reader(open(url))]
             except IOError:
                 return []
+        return []
 
     def writefile(self, data, filename, args=None, type="w"):
         url = self.url.get(str(filename))

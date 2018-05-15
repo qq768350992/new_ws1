@@ -25,7 +25,7 @@ class TimerQueue:
         for row in info:
             if start_time >= row[0] and start_time < row[1]:
                 return row
-            elif start_time >= row[1] and start_time < info[1+info.index(row)][0]:
+            elif start_time >= row[1] and start_time < int(info[1+info.index(row)][0]):
                 return info[1+info.index(row)]
 
     #  4.4 进队检测与处理（wechat_id, course_id）

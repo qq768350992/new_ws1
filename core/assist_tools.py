@@ -29,7 +29,8 @@ class AssistTools:
 
     #  0.1.5获取学生全部的课程号(wechat_id)
     def get_courseid_stu(self, wechat_id):
-        return [row[0] for row in self.opt.readfile("courseInfo") if [row[2] for row in self.opt.readfile("studentInfo") if row[0] == self.get_stuid(wechat_id)[0]].count(row[3])>=1]
+        temp = [row[2] for row in self.opt.readfile("studentInfo") if row[0] == self.get_stuid(wechat_id)[0]]
+        return [row[0] for row in self.opt.readfile("courseInfo") if temp.count(row[3])>=1]
 
     #  0.1.6获取教师所有课程号(wechat_id)
     def get_courseid_tea(self, wechat_id):
@@ -41,7 +42,8 @@ class AssistTools:
 
     #  0.1.9 获取某课程的所有学生学号(course_id)
     def get_allstuID(self, course_id):
-        return [row[0] for row in self.opt.readfile("studentInfo") if self.get_classnamelist(course_id).count(row[2]) >= 1]
+        temp = self.get_classnamelist(course_id)
+        return [row[0] for row in self.opt.readfile("studentInfo") if temp.count(row[2]) >= 1]
 
     #  0.1.10获取当前时间()
     def get_localtime(self):
@@ -168,10 +170,13 @@ class AssistTools:
 
     # 0.13 获取学生状态
     def getCheckinResult(self, filename, args=None, keys=None):
-        if filename == "lea":  # keys=[stu_id, course_id, seq_id]
-            return [row for row in self.opt.readfile(filename, args) if keys == row[0:3]]
-        else:   # keys=stu_id
-            return [row[5] for row in self.opt.readfile(filename, args) if keys == row[0]]
+        try:
+            if filename == "lea":  # keys=[stu_id, course_id, seq_id]
+                return [row for row in self.opt.readfile(filename, args) if keys == row[0:3]]
+            else:   # keys=stu_id
+                return [row[5] for row in self.opt.readfile(filename, args) if keys == row[0]]
+        except:
+            return []
 
     # 0.11 更新lea.csv
     def update_lea(self, data):
@@ -188,7 +193,7 @@ class AssistTools:
 
     # 根据学生，修该某个内容
     def alterItem(self, filename, args=None, cmp=None, keys=None):
-        self.opt.alteritem(filename, args, (0, cmp, keys[0], keys[1]))
+        self.opt.alteritem(filename, args, (0, cmp, aim_pos, keys[1]))
         print(str(args) + "修改成功" + filename)
 
 if __name__ == "__main__":

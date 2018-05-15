@@ -44,7 +44,7 @@ class Student:
         Sid = self.tool.get_stuid(wechat_id)
         Cid = [row for row in self.tool.get_courseid_stu(wechat_id) if self.time.isexist_courseid(row)]
         if Cid:
-            SeqID = self.tool.get_seqid(Cid[0])
+            SeqID = str(self.tool.get_seqid(Cid[0]))
             args = [self.tool.get_teaid_incourseid(Cid[0])[0], Cid[0], SeqID]
             keys = [Sid[0], Cid[0], SeqID]
             if self.tool.getCheckinResult("lea", None, keys):
@@ -79,18 +79,43 @@ class Student:
             if Cid:
                 self.tool.update_lea([self.tool.get_stuid(wechat_id)[0], Cid[0], self.tool.get_seqid(Cid[0]), self.tool.format_time(), ProofPath])
 
-    def show_now(self):
-        # 根据时间窗口判断是否可考勤
-        # 从优先级为lea.csv > random.csv > detail.csv
-        pass
+    # 根据时间窗口判断是否可考勤
+    # 从优先级为lea.csv > random.csv > detail.csv
+    def show_now(self, wechat_id):
+        Sid = self.tool.get_stuid(wechat_id)
+        Cid = [row for row in self.tool.get_courseid_stu(wechat_id) if self.time.isexist_courseid(row)]
+        if Cid:
+            SeqID = str(self.tool.get_seqid(Cid[0]))
+            args = [self.tool.get_teaid_incourseid(Cid[0])[0], Cid[0], SeqID]
+            keys = [Sid[0], Cid[0], SeqID]
+            print("您当前的状态是: ", end="")
+            print(self.colshow(args, keys))
 
-    def show_recent(self, course_id):
+    def colshow(self, args, keys):
+        if self.tool.getCheckinResult("lea", None, keys):
+            return "请假"
+        temp = self.tool.getCheckinResult("randomdetail", args[0:-1], keys[0])
+        if temp:
+            if temp[0] == "null":
+                return "未参与"
+            else:
+                return temp[0]
+        temp = self.tool.getCheckinResult("detail", args, keys[0])
+        if temp:
+            if temp[0] == "null":
+                return "未参与"
+            else:
+                return temp[0]
+        return " "
+
+    def show_recent(self, wechat_id, course_id):
         # 根据seq.csv中获取此课程的考了几次
         # 依次遍历，从优先级为lea.csv > random.csv > detail.csv
-        pass
+        tea_id = self.tool.get_teaid_incourseid(course_id)
+        Sid = self.tool.get_stuid(wechat_id)
+        for i in range(1, self.tool.get_seqid(course_id)+1):
+            print(str(i)+": "+self.colshow([tea_id[0], course_id, str(i)], [Sid[0], course_id, str(i)]))
 
 if __name__ == "__main__":
     t = Student()
-    #t.attendCheckin("wfsf_105")
-    # t.lea()
-    #print(t.update_seq("51610055"))
+    t.show_recent("wfsf_105", "51610189")
